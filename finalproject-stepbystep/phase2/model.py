@@ -39,11 +39,14 @@ class PredictiveSwitchModel(nn.Module):
         loss_dur_val = 0.0
         
         if switch_labels is not None and duration_labels is not None:
-            # Switch Loss (Filter out ignore_index=-100)
             active_mask = (switch_labels != -100)
             if active_mask.sum() > 0:
-                batch_loss_sw = self.loss_sw_fn(switch_logits, switch_labels.float())
-                loss_sw_val = batch_loss_sw[active_mask].mean()
+                active_logits = switch_logits[active_mask]
+                active_labels = switch_labels[active_mask].float()
+                
+                # BCE에 -100이 들어가면 간혹 연산 오버플로우로 NaN이 터지므로 필터 후 손실 계산
+                batch_loss_sw = self.loss_sw_fn(active_logits, active_labels)
+                loss_sw_val = batch_loss_sw.mean()
             else:
                 loss_sw_val = torch.tensor(0.0, device=switch_logits.device, requires_grad=True)
                 

@@ -14,6 +14,7 @@ def parse_args():
     parser.add_argument("--samples_per_pair", type=int, default=MAX_SAMPLES_PER_PAIR, help="Max samples per language pair")
     parser.add_argument("--backbones", nargs="+", choices=["xlm-roberta", "mbert"], 
                         default=["xlm-roberta", "mbert"], help="Backbones to run")
+    parser.add_argument("--resume_path", type=str, default=None, help="과거 저장된 뇌 파일(.pt)의 상대 또는 절대 경로")
     return parser.parse_args()
 
 def main():
@@ -35,7 +36,7 @@ def main():
         print(f"{'='*80}")
         
         # 1. Train
-        train_res = train_model(model_name, epochs=args.epochs, max_samples_per_pair=args.samples_per_pair)
+        train_res = train_model(model_name, epochs=args.epochs, max_samples_per_pair=args.samples_per_pair, resume_path=args.resume_path)
         model = train_res["model"]
         history = train_res["history"]
         val_loader = train_res["val_loader"]

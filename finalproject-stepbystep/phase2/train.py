@@ -49,7 +49,7 @@ def get_device():
         return torch.device("cuda")
     return torch.device("cpu")
 
-def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000):
+def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_path=None):
     device = get_device()
     print(f"Using device: {device}")
     
@@ -70,6 +70,12 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000):
     
     # Initialize model
     model = PredictiveSwitchModel(model_name)
+    
+    if resume_path and os.path.exists(resume_path):
+        print(f"🔥 머리 여는 중... 저장된 과거의 뇌({resume_path})를 모델에 덮어씌웁니다!!")
+        model.load_state_dict(torch.load(resume_path, map_location=device, weights_only=True))
+        print("✅ 뇌 이식 완료! 남은 바퀴 수만큼 훈련을 추가로 시작합니다.")
+        
     model.to(device)
     
     optimizer = AdamW(model.parameters(), lr=LR)
