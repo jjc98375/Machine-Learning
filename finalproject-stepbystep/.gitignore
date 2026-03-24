@@ -1,0 +1,17 @@
+# Zip files
+*.zip
+final_project_code*
+
+# Model files
+*.pt
+*.pth
+*.bin
+*.h5
+*.pkl
+*.ckpt
+*.safetensors
+**/models/
+
+# Misc
+phase1/
+server.pid
