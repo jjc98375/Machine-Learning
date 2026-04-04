@@ -9,16 +9,23 @@ from phase2_config import LR, EPOCHS, WARMUP_RATIO, BATCH_SIZE, MODELS_DIR, PAIR
 from dataset import CompleteStreamingDataset, collate_fn
 from model import PredictiveSwitchModel
 
-def collect_dataset(model_name, max_per_pair):
+def collect_dataset(model_name, max_per_pair, exclude_pairs=None):
+    if exclude_pairs is None:
+        exclude_pairs = []
+        
     print(f"Collecting up to {max_per_pair} samples per pair for {model_name}...")
     dataset_iter = CompleteStreamingDataset(model_name=model_name)
     pair_counts = defaultdict(int)
     collected_samples = []
     
-    target_pairs = list(PAIR_FILES.keys())
+    target_pairs = [p for p in PAIR_FILES.keys() if p not in exclude_pairs]
     
     for sample in dataset_iter:
         pair = sample["lang_pair"]
+        
+        if pair in exclude_pairs:
+            continue
+            
         if pair_counts[pair] < max_per_pair:
             collected_samples.append(sample)
             pair_counts[pair] += 1
@@ -49,15 +56,39 @@ def get_device():
         return torch.device("cuda")
     return torch.device("cpu")
 
-def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_path=None):
+def get_eval_dataloader(model_name, max_samples_per_pair, include_pairs):
+    print(f"\n--- Collecting ZERO-SHOT EVALUATION Data (Only: {include_pairs}) ---")
+    dataset_iter = CompleteStreamingDataset(model_name=model_name)
+    pair_counts = defaultdict(int)
+    collected_samples = []
+    
+    for sample in dataset_iter:
+        pair = sample["lang_pair"]
+        if pair not in include_pairs:
+            continue
+            
+        if pair_counts[pair] < max_samples_per_pair:
+            collected_samples.append(sample)
+            pair_counts[pair] += 1
+                
+        if all(pair_counts[p] >= max_samples_per_pair for p in include_pairs):
+            break
+            
+    dataset = ListDataset(collected_samples)
+    return DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
+
+def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_path=None, exclude_pairs=None, batch_size=BATCH_SIZE, lr=LR, focal_alpha=0.8, focal_gamma=2.0, run_name="default"):
+    if exclude_pairs is None:
+        exclude_pairs = []
     device = get_device()
     print(f"Using device: {device}")
     
     # Get short model identifier
     model_id = [k for k, v in MODELS.items() if v == model_name][0]
     
-    # Collect data
-    samples = collect_dataset(model_name, max_samples_per_pair)
+    # Collect data strictly for training domains
+    print(f"\n--- Collecting TRAINING Data (Excluding Zero-Shot: {exclude_pairs}) ---")
+    samples = collect_dataset(model_name, max_samples_per_pair, exclude_pairs=exclude_pairs)
     dataset = ListDataset(samples)
     
     # Random split 80/20
@@ -65,11 +96,11 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
     
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=collate_fn)
-    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
     
     # Initialize model
-    model = PredictiveSwitchModel(model_name)
+    model = PredictiveSwitchModel(model_name, focal_alpha=focal_alpha, focal_gamma=focal_gamma)
     
     if resume_path and os.path.exists(resume_path):
         print(f"🔥 머리 여는 중... 저장된 과거의 뇌({resume_path})를 모델에 덮어씌웁니다!!")
@@ -78,7 +109,7 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
         
     model.to(device)
     
-    optimizer = AdamW(model.parameters(), lr=LR)
+    optimizer = AdamW(model.parameters(), lr=lr)
     total_steps = len(train_loader) * epochs
     num_warmup_steps = int(total_steps * WARMUP_RATIO)
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=num_warmup_steps, num_training_steps=total_steps)
@@ -147,8 +178,8 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
               f"Train Loss: {avg_train_loss:.4f} (SW: {avg_train_sw:.4f}, DUR: {avg_train_dur:.4f}) | "
               f"Val Loss: {avg_val_loss:.4f} (SW: {avg_val_sw:.4f}, DUR: {avg_val_dur:.4f})")
               
-    # Save model
-    model_path = os.path.join(MODELS_DIR, f"{model_id}_final.pt")
+    # Save model uniquely
+    model_path = os.path.join(MODELS_DIR, f"{model_id}_{run_name}_final.pt")
     torch.save(model.state_dict(), model_path)
     print(f"Saved model to {model_path}")
     

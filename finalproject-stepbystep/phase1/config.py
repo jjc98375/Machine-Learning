@@ -14,6 +14,10 @@ PAIR_FILES = {
     "French-English":  "French_eng.csv",     # Axis 2: Same Script
     "Korean-English":  "Korean_eng.csv",     # Axis 3: Distant Typology
     "Chinese-English": "Chinese_eng.csv",    # Axis 3: Distant Typology
+    "German-English":  "German_Eng.csv",     # Extra: Same Script (note: capital E in repo)
+    "Italian-English": "Italian_eng.csv",    # Extra: Same Script
+    "Russian-English": "Russian_eng.csv",    # Extra: Different Script
+    "Japanese-English": "Japanese_eng.csv",  # Extra: Distant Typology
 }
 
 # =============================================================================
@@ -25,19 +29,24 @@ SCRIPT_RANGES = {
     "CJK":        [(0x4E00, 0x9FFF), (0x3400, 0x4DBF)],
     "Hangul":     [(0xAC00, 0xD7AF), (0x1100, 0x11FF)],
     "Latin":      [(0x0041, 0x024F)],
+    "Cyrillic":   [(0x0400, 0x04FF), (0x0500, 0x052F)],
+    "Japanese":   [(0x3040, 0x309F), (0x30A0, 0x30FF), (0x4E00, 0x9FFF)],
+
 }
 
 # Maps language name → script it uses
 LANG_TO_SCRIPT = {
     "Hindi": "Devanagari", "Arabic": "Arabic", "Chinese": "CJK",
     "Korean": "Hangul", "Spanish": "Latin", "French": "Latin",
-    "English": "Latin",
+    "English": "Latin", "German": "Latin", "Italian": "Latin",
+    "Russian": "Cyrillic", "Japanese": "Japanese",
 }
 
 # Maps language name → ISO code (for langid library)
 LANG_TO_ISO = {
     "Hindi": "hi", "Arabic": "ar", "Chinese": "zh", "Korean": "ko",
     "Spanish": "es", "French": "fr", "English": "en",
+    "German": "de", "Italian": "it", "Russian": "ru", "Japanese": "ja",
 }
 
 # =============================================================================
