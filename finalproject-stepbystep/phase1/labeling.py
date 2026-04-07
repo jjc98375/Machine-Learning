@@ -90,8 +90,13 @@ def identify_token_languages(
             prev = lang
         return tokens, langs
     except ImportError:
-        print("WARNING: pip install langid (needed for same-script pairs)")
+        if not identify_token_languages._langid_warned:
+            identify_token_languages._langid_warned = True
+            print("WARNING: pip install langid (needed for same-script pairs)")
         return tokens, [lang2] * len(tokens)
+
+# Module-level flag for one-time warning
+identify_token_languages._langid_warned = False
 
 
 # =============================================================================
