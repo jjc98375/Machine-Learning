@@ -93,4 +93,66 @@ def main():
     # =========================================================================
     log_path = os.path.join(OUTPUT_DIR, "experiment_history.txt")
     with open(log_path, "a", encoding="utf-8") as f:
-        now =
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"\n[{now}] === EXPERIMENT RUN SUMMARY ===\n")
+        f.write(f"Hyperparameters:\n")
+        f.write(f" - Epochs                   : {args.epochs}\n")
+        f.write(f" - Max Samples per Pair     : {args.samples_per_pair}\n")
+        f.write(f" - Batch Size               : {args.batch_size}\n")
+        f.write(f" - Learning Rate            : {args.lr}\n")
+        f.write(f" - Focal Loss (Alpha)       : {args.focal_alpha}\n")
+        f.write(f" - Focal Loss (Gamma)       : {args.focal_gamma}\n\n")
+        
+        f.write(f"Results Breakdown:\n")
+        for model_name_key, res in results.items():
+            mac_f1 = res.get('mean_f1', 0)
+            dur_acc = res.get('duration_accuracy', 0)
+            sigma = res.get('sigma', 0)
+            sw_f1 = res.get('f1_switch', 0)
+            nosw_f1 = res.get('f1_no_switch', 0)
+            
+            f.write(f" [{model_name_key.upper()}]\n")
+            f.write(f"   * Mean Anticipatory F1 : {mac_f1:.4f}\n")
+            f.write(f"   * Universality (Sigma) : {sigma:.4f}\n")
+            f.write(f"   * Duration Accuracy    : {dur_acc:.4f}\n")
+            f.write(f"   * F1 (Switch=1)        : {sw_f1:.4f}\n")
+            f.write(f"   * F1 (No-Switch=0)     : {nosw_f1:.4f}\n")
+            
+            # 언어 쌍별 자세한 점수도 교수님 보시기 좋게 영어로 정리해줍니다.
+            if 'per_pair_f1' in res:
+                f.write(f"     [Per-Pair F1 Breakdown]\n")
+                for p_name, p_f1 in res['per_pair_f1'].items():
+                    f.write(f"      - {p_name:<16}: {p_f1:.4f}\n")
+            
+            # Zero-Shot 결과 로깅
+            if args.zero_shot_pairs and model_name_key in zero_shot_results:
+                zs_res = zero_shot_results[model_name_key]
+                f.write(f"\n     [ZERO-SHOT UNIVERSAL EVALUATION]\n")
+                f.write(f"      * Mean ZS F1   : {zs_res.get('mean_f1', 0):.4f}\n")
+                for p_name, p_f1 in zs_res.get('per_pair_f1', {}).items():
+                    f.write(f"      - {p_name:<16}: {p_f1:.4f} (Unseen Data!)\n")
+            
+            f.write("\n")
+        f.write("=" * 65 + "\n")
+    print(f"\n✅ 현재 실험 결과 영문 프레젠테이션용 명세서가 'experiment_history.txt' 에 기록되었습니다!")
+    
+    # JSON 파일로도 내보내기 (이름을 고유하게 저장!)
+    json_path = os.path.join(OUTPUT_DIR, f"{current_run_dir_name}_results.json")
+    with open(json_path, "w", encoding="utf-8") as jf:
+        json.dump({
+            "run_id": current_run_dir_name,
+            "hyperparameters": {
+                "epochs": args.epochs,
+                "samples": args.samples_per_pair,
+                "batch_size": args.batch_size,
+                "lr": args.lr,
+                "focal_alpha": args.focal_alpha,
+                "focal_gamma": args.focal_gamma
+            },
+            "in_domain": results,
+            "zero_shot": zero_shot_results
+        }, jf, indent=4)
+    print(f"✅ 성능 데이터 고유 JSON 덤프 완료: '{current_run_dir_name}_results.json'")
+
+if __name__ == "__main__":
+    main()
