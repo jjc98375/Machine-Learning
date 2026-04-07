@@ -3,6 +3,7 @@ from torch.utils.data import Dataset, DataLoader, random_split
 from torch.optim import AdamW
 from transformers import get_linear_schedule_with_warmup
 from collections import defaultdict
+from tqdm import tqdm
 import os
 
 from phase2_config import LR, EPOCHS, WARMUP_RATIO, BATCH_SIZE, MODELS_DIR, PAIR_FILES, MODELS
@@ -19,23 +20,24 @@ def collect_dataset(model_name, max_per_pair, exclude_pairs=None):
     collected_samples = []
     
     target_pairs = [p for p in PAIR_FILES.keys() if p not in exclude_pairs]
-    
+    total_target = max_per_pair * len(target_pairs)
+
+    pbar = tqdm(total=total_target, desc="Collecting data", unit="samples")
     for sample in dataset_iter:
         pair = sample["lang_pair"]
-        
+
         if pair in exclude_pairs:
             continue
-            
+
         if pair_counts[pair] < max_per_pair:
             collected_samples.append(sample)
             pair_counts[pair] += 1
-            
-            if len(collected_samples) % 500 == 0:
-                print(f"  Collected {len(collected_samples)} samples...")
-                
+            pbar.update(1)
+
         if all(pair_counts[p] >= max_per_pair for p in target_pairs):
             break
-            
+    pbar.close()
+
     print(f"Successfully collected {len(collected_samples)} total samples.")
     return collected_samples
 
@@ -62,17 +64,21 @@ def get_eval_dataloader(model_name, max_samples_per_pair, include_pairs):
     pair_counts = defaultdict(int)
     collected_samples = []
     
+    total_target = max_samples_per_pair * len(include_pairs)
+    pbar = tqdm(total=total_target, desc="Collecting zero-shot eval data", unit="samples")
     for sample in dataset_iter:
         pair = sample["lang_pair"]
         if pair not in include_pairs:
             continue
-            
+
         if pair_counts[pair] < max_samples_per_pair:
             collected_samples.append(sample)
             pair_counts[pair] += 1
-                
+            pbar.update(1)
+
         if all(pair_counts[p] >= max_samples_per_pair for p in include_pairs):
             break
+    pbar.close()
             
     dataset = ListDataset(collected_samples)
     return DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
@@ -123,8 +129,8 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
     for epoch in range(epochs):
         model.train()
         total_loss, total_sw, total_dur = 0, 0, 0
-        
-        for batch in train_loader:
+
+        for batch in tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs} [Train]", leave=False):
             optimizer.zero_grad()
             
             input_ids = batch["input_ids"].to(device)
@@ -152,7 +158,7 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
         model.eval()
         val_loss, val_sw, val_dur = 0, 0, 0
         with torch.no_grad():
-            for batch in val_loader:
+            for batch in tqdm(val_loader, desc=f"Epoch {epoch+1}/{epochs} [Val]", leave=False):
                 input_ids = batch["input_ids"].to(device)
                 attention_mask = batch["attention_mask"].to(device)
                 switch_labels = batch["switch_labels"].to(device)
