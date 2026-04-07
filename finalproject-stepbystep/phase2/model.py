@@ -40,7 +40,7 @@ class BinaryFocalLossWithLogits(nn.Module):
 
 
 class PredictiveSwitchModel(nn.Module):
-    def __init__(self, model_name, lambda_sw=0.67, lambda_dur=0.33, focal_alpha=0.8, focal_gamma=2.0):
+    def __init__(self, model_name, lambda_sw=0.67, lambda_dur=0.33, focal_alpha=0.8, focal_gamma=2.0, unfreeze_layers=0):
         super().__init__()
         self.lambda_sw = lambda_sw
         self.lambda_dur = lambda_dur
@@ -53,14 +53,55 @@ class PredictiveSwitchModel(nn.Module):
         self.backbone = AutoModel.from_pretrained(model_name, config=config)
         hidden_size = config.hidden_size
         
-        # Dual heads for multi-task
-        self.switch_head = nn.Linear(hidden_size, 1)
-        # 💡 일반 BCE 로스를 지우고, 교수님 전용 최상위 Focal Loss 장착 (동적 파라미터 적용)
+        # MLP heads instead of single Linear — more capacity to learn switch patterns
+        self.switch_head = nn.Sequential(
+            nn.Linear(hidden_size, 256),
+            nn.GELU(),
+            nn.Dropout(0.1),
+            nn.Linear(256, 1)
+        )
         self.loss_sw_fn = BinaryFocalLossWithLogits(alpha=focal_alpha, gamma=focal_gamma, reduction='none')
         
-        self.duration_head = nn.Linear(hidden_size, 3)
+        self.duration_head = nn.Sequential(
+            nn.Linear(hidden_size, 256),
+            nn.GELU(),
+            nn.Dropout(0.1),
+            nn.Linear(256, 3)
+        )
         self.loss_dur_fn = nn.CrossEntropyLoss(ignore_index=-100)
+
+        # Freeze backbone, then selectively unfreeze top N layers
+        if unfreeze_layers > 0:
+            self._freeze_backbone(unfreeze_layers)
         
+    def _freeze_backbone(self, unfreeze_layers):
+        """Freeze all backbone params, then unfreeze the top N transformer layers + pooler."""
+        # First freeze everything
+        for param in self.backbone.parameters():
+            param.requires_grad = False
+        
+        # Unfreeze top N encoder layers
+        encoder_layers = None
+        if hasattr(self.backbone, 'encoder'):  # BERT-style
+            encoder_layers = self.backbone.encoder.layer
+        elif hasattr(self.backbone, 'layer'):
+            encoder_layers = self.backbone.layer
+            
+        if encoder_layers is not None:
+            total = len(encoder_layers)
+            for layer in encoder_layers[max(0, total - unfreeze_layers):]:
+                for param in layer.parameters():
+                    param.requires_grad = True
+        
+        # Always unfreeze pooler if it exists
+        if hasattr(self.backbone, 'pooler') and self.backbone.pooler is not None:
+            for param in self.backbone.pooler.parameters():
+                param.requires_grad = True
+
+        trainable = sum(p.numel() for p in self.backbone.parameters() if p.requires_grad)
+        total = sum(p.numel() for p in self.backbone.parameters())
+        print(f"  Backbone: {trainable:,}/{total:,} params trainable (top {unfreeze_layers} layers unfrozen)")
+
     def forward(self, input_ids, attention_mask, switch_labels=None, duration_labels=None):
         outputs = self.backbone(input_ids=input_ids, attention_mask=attention_mask)
         # Use last hidden state for token-level predictions
@@ -82,9 +123,6 @@ class PredictiveSwitchModel(nn.Module):
                 active_logits = switch_logits[active_mask]
                 active_labels = switch_labels[active_mask].float()
                 
-                # 💡 [논문 최적화 포인트]: 파라미터 감쇠 오차 함수 (Focal Loss) 적용 완료
-                # 클래스 4:1 불균형을 해결하기 위해, 빈도수 20%의 스위칭 토큰은 alpha=0.8를 주고, 
-                # (1-p_t)^gamma 스케일링을 통해 이미 잘 맞춘(0) 노이즈는 완전히 무시합니다.
                 batch_loss_sw = self.loss_sw_fn(active_logits, active_labels)
                 loss_sw_val = batch_loss_sw.mean()
             else:

@@ -20,7 +20,9 @@ def parse_args():
     parser.add_argument("--focal_alpha", type=float, default=0.8, help="Focal Loss Alpha (weight for positive class)")
     parser.add_argument("--focal_gamma", type=float, default=2.0, help="Focal Loss Gamma (focusing parameter)")
     parser.add_argument("--zero_shot_pairs", nargs="*", default=[], help="Language pairs to hold out for Zero-Shot Evaluation")
-    parser.add_argument("--resume_path", type=str, default=None, help="과거 저장된 뇌 파일(.pt)의 상대 또는 절대 경로")
+    parser.add_argument("--unfreeze_layers", type=int, default=3, help="Number of top backbone layers to unfreeze (0=full fine-tune)")
+    parser.add_argument("--patience", type=int, default=2, help="Early stopping patience (epochs without improvement)")
+    parser.add_argument("--resume_path", type=str, default=None, help="Path to saved model checkpoint (.pt)")
     return parser.parse_args()
 
 def main():
@@ -53,6 +55,8 @@ def main():
             lr=args.lr,
             focal_alpha=args.focal_alpha,
             focal_gamma=args.focal_gamma,
+            unfreeze_layers=args.unfreeze_layers,
+            patience=args.patience,
             run_name=current_run_dir_name
         )
         model = train_res["model"]

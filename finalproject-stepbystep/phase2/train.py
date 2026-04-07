@@ -77,7 +77,7 @@ def get_eval_dataloader(model_name, max_samples_per_pair, include_pairs):
     dataset = ListDataset(collected_samples)
     return DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
 
-def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_path=None, exclude_pairs=None, batch_size=BATCH_SIZE, lr=LR, focal_alpha=0.8, focal_gamma=2.0, run_name="default"):
+def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_path=None, exclude_pairs=None, batch_size=BATCH_SIZE, lr=LR, focal_alpha=0.8, focal_gamma=2.0, unfreeze_layers=3, patience=2, run_name="default"):
     if exclude_pairs is None:
         exclude_pairs = []
     device = get_device()
@@ -100,7 +100,7 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
     
     # Initialize model
-    model = PredictiveSwitchModel(model_name, focal_alpha=focal_alpha, focal_gamma=focal_gamma)
+    model = PredictiveSwitchModel(model_name, focal_alpha=focal_alpha, focal_gamma=focal_gamma, unfreeze_layers=unfreeze_layers)
     
     if resume_path and os.path.exists(resume_path):
         print(f"🔥 머리 여는 중... 저장된 과거의 뇌({resume_path})를 모델에 덮어씌웁니다!!")
@@ -119,6 +119,11 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
         "val_loss": [], "val_loss_sw": [], "val_loss_dur": []
     }
     
+    # Early stopping setup
+    best_val_loss = float('inf')
+    best_model_state = None
+    epochs_no_improve = 0
+
     print("Starting training...")
     for epoch in range(epochs):
         model.train()
@@ -177,6 +182,24 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
         print(f"Epoch {epoch+1}/{epochs} | "
               f"Train Loss: {avg_train_loss:.4f} (SW: {avg_train_sw:.4f}, DUR: {avg_train_dur:.4f}) | "
               f"Val Loss: {avg_val_loss:.4f} (SW: {avg_val_sw:.4f}, DUR: {avg_val_dur:.4f})")
+
+        # Early stopping check
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            best_model_state = {k: v.clone() for k, v in model.state_dict().items()}
+            epochs_no_improve = 0
+            print(f"  ✓ New best val loss: {best_val_loss:.4f}")
+        else:
+            epochs_no_improve += 1
+            print(f"  ✗ No improvement for {epochs_no_improve}/{patience} epochs")
+            if epochs_no_improve >= patience:
+                print(f"  Early stopping triggered at epoch {epoch+1}. Restoring best model.")
+                model.load_state_dict(best_model_state)
+                break
+
+    # If finished all epochs without early stop, still load best weights
+    if best_model_state is not None and epochs_no_improve < patience:
+        model.load_state_dict(best_model_state)
               
     # Save model uniquely
     model_path = os.path.join(MODELS_DIR, f"{model_id}_{run_name}_final.pt")
