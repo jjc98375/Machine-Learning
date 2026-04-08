@@ -33,8 +33,16 @@ def main():
     zero_shot_results = {}
     histories = {}
     
-    # ✨ 1. 회원님 요청: 실험 조건(하이퍼파라미터)에 따라 자동으로 구분되는 전용 결과 폴더 생성!
-    current_run_dir_name = f"run_ep{args.epochs}_s{args.samples_per_pair}_bs{args.batch_size}_lr{args.lr}_a{args.focal_alpha}_g{args.focal_gamma}"
+    # Build unique run name from all params + zero-shot config
+    zs_tag = ""
+    if args.zero_shot_pairs:
+        zs_short = "_".join(p.split("-")[0][:3] for p in args.zero_shot_pairs)  # e.g. "Fre_Spa"
+        zs_tag = f"_zs-{zs_short}"
+    else:
+        zs_tag = "_supervised"
+    
+    ul_tag = f"_ul{args.unfreeze_layers}" if args.unfreeze_layers > 0 else "_fullft"
+    current_run_dir_name = f"run_ep{args.epochs}_s{args.samples_per_pair}_bs{args.batch_size}_lr{args.lr}_a{args.focal_alpha}_g{args.focal_gamma}{ul_tag}{zs_tag}"
     custom_plots_dir = os.path.join(PLOTS_DIR, current_run_dir_name)
     os.makedirs(custom_plots_dir, exist_ok=True)
     
@@ -105,7 +113,12 @@ def main():
         f.write(f" - Batch Size               : {args.batch_size}\n")
         f.write(f" - Learning Rate            : {args.lr}\n")
         f.write(f" - Focal Loss (Alpha)       : {args.focal_alpha}\n")
-        f.write(f" - Focal Loss (Gamma)       : {args.focal_gamma}\n\n")
+        f.write(f" - Focal Loss (Gamma)       : {args.focal_gamma}\n")
+        f.write(f" - Unfreeze Layers          : {args.unfreeze_layers}\n")
+        f.write(f" - Early Stop Patience      : {args.patience}\n")
+        if args.zero_shot_pairs:
+            f.write(f" - Zero-Shot Held Out       : {args.zero_shot_pairs}\n")
+        f.write(f"\n")
         
         f.write(f"Results Breakdown:\n")
         for model_name_key, res in results.items():
@@ -151,7 +164,10 @@ def main():
                 "batch_size": args.batch_size,
                 "lr": args.lr,
                 "focal_alpha": args.focal_alpha,
-                "focal_gamma": args.focal_gamma
+                "focal_gamma": args.focal_gamma,
+                "unfreeze_layers": args.unfreeze_layers,
+                "patience": args.patience,
+                "zero_shot_pairs": args.zero_shot_pairs
             },
             "in_domain": results,
             "zero_shot": zero_shot_results
