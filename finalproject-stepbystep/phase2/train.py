@@ -77,7 +77,7 @@ def get_eval_dataloader(model_name, max_samples_per_pair, include_pairs):
     dataset = ListDataset(collected_samples)
     return DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
 
-def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_path=None, exclude_pairs=None, batch_size=BATCH_SIZE, lr=LR, focal_alpha=0.8, focal_gamma=2.0, unfreeze_layers=3, patience=2, run_name="default"):
+def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_path=None, exclude_pairs=None, batch_size=BATCH_SIZE, lr=LR, focal_alpha=0.8, focal_gamma=2.0, unfreeze_layers=3, patience=2, run_name="default", single_task=False):
     if exclude_pairs is None:
         exclude_pairs = []
     device = get_device()
@@ -100,7 +100,7 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
     
     # Initialize model
-    model = PredictiveSwitchModel(model_name, focal_alpha=focal_alpha, focal_gamma=focal_gamma, unfreeze_layers=unfreeze_layers)
+    model = PredictiveSwitchModel(model_name, focal_alpha=focal_alpha, focal_gamma=focal_gamma, unfreeze_layers=unfreeze_layers, single_task=single_task)
     
     if resume_path and os.path.exists(resume_path):
         print(f"🔥 머리 여는 중... 저장된 과거의 뇌({resume_path})를 모델에 덮어씌웁니다!!")

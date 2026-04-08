@@ -40,10 +40,11 @@ class BinaryFocalLossWithLogits(nn.Module):
 
 
 class PredictiveSwitchModel(nn.Module):
-    def __init__(self, model_name, lambda_sw=0.67, lambda_dur=0.33, focal_alpha=0.8, focal_gamma=2.0, unfreeze_layers=0):
+    def __init__(self, model_name, lambda_sw=0.67, lambda_dur=0.33, focal_alpha=0.8, focal_gamma=2.0, unfreeze_layers=0, single_task=False):
         super().__init__()
-        self.lambda_sw = lambda_sw
-        self.lambda_dur = lambda_dur
+        self.single_task = single_task
+        self.lambda_sw = 1.0 if single_task else lambda_sw
+        self.lambda_dur = 0.0 if single_task else lambda_dur
         
         # Enable Causal masking (is_decoder=True)
         config = AutoConfig.from_pretrained(model_name)

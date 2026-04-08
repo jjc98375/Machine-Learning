@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument("--unfreeze_layers", type=int, default=3, help="Number of top backbone layers to unfreeze (0=full fine-tune)")
     parser.add_argument("--patience", type=int, default=2, help="Early stopping patience (epochs without improvement)")
     parser.add_argument("--resume_path", type=str, default=None, help="Path to saved model checkpoint (.pt)")
+    parser.add_argument("--single_task", action="store_true", help="Switch-only ablation (disable duration head loss)")
     return parser.parse_args()
 
 def main():
@@ -42,7 +43,8 @@ def main():
         zs_tag = "_supervised"
     
     ul_tag = f"_ul{args.unfreeze_layers}" if args.unfreeze_layers > 0 else "_fullft"
-    current_run_dir_name = f"run_ep{args.epochs}_s{args.samples_per_pair}_bs{args.batch_size}_lr{args.lr}_a{args.focal_alpha}_g{args.focal_gamma}{ul_tag}{zs_tag}"
+    st_tag = "_singletask" if args.single_task else ""
+    current_run_dir_name = f"run_ep{args.epochs}_s{args.samples_per_pair}_bs{args.batch_size}_lr{args.lr}_a{args.focal_alpha}_g{args.focal_gamma}{ul_tag}{zs_tag}{st_tag}"
     custom_plots_dir = os.path.join(PLOTS_DIR, current_run_dir_name)
     os.makedirs(custom_plots_dir, exist_ok=True)
     
@@ -54,9 +56,9 @@ def main():
         
         # 1. Train (Excluding Zero-Shot Pairs and using new hyperparameters)
         train_res = train_model(
-            model_name, 
-            epochs=args.epochs, 
-            max_samples_per_pair=args.samples_per_pair, 
+            model_name,
+            epochs=args.epochs,
+            max_samples_per_pair=args.samples_per_pair,
             resume_path=args.resume_path,
             exclude_pairs=args.zero_shot_pairs,
             batch_size=args.batch_size,
@@ -65,7 +67,8 @@ def main():
             focal_gamma=args.focal_gamma,
             unfreeze_layers=args.unfreeze_layers,
             patience=args.patience,
-            run_name=current_run_dir_name
+            run_name=current_run_dir_name,
+            single_task=args.single_task
         )
         model = train_res["model"]
         history = train_res["history"]
