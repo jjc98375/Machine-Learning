@@ -183,12 +183,17 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
               f"Train Loss: {avg_train_loss:.4f} (SW: {avg_train_sw:.4f}, DUR: {avg_train_dur:.4f}) | "
               f"Val Loss: {avg_val_loss:.4f} (SW: {avg_val_sw:.4f}, DUR: {avg_val_dur:.4f})")
 
-        # Early stopping check
+        # Early stopping check & Checkpoint save
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             best_model_state = {k: v.clone() for k, v in model.state_dict().items()}
             epochs_no_improve = 0
             print(f"  ✓ New best val loss: {best_val_loss:.4f}")
+            
+            # Save periodic checkpoint immediately to prevent data loss if cluster kills job
+            ckpt_path = os.path.join(MODELS_DIR, f"{model_id}_{run_name}_ckpt.pt")
+            torch.save(model.state_dict(), ckpt_path)
+            print(f"  💾 Checkpoint saved to {ckpt_path}")
         else:
             epochs_no_improve += 1
             print(f"  ✗ No improvement for {epochs_no_improve}/{patience} epochs")
