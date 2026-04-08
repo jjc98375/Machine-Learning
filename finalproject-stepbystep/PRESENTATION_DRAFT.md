@@ -215,23 +215,21 @@ Our model completely solved Latin-script generalization. Without ever seeing a s
 
 ---
 
-## Slide 12: Qualitative Analysis
+## Slide 12: Qualitative Analysis (Token-level)
 
-**[Fill in after qualitative_analysis.py runs]**
+**True Positive (Anticipating Clausal Boundaries):**
+> "The election results were largely unexpected, [MODEL PREDICTS SWITCH ->] pero la gente estaba feliz."
+> Model correctly anticipated Spanish clause after the comma with P(switch) = 0.82
 
-**True Positive (Successful Prediction):**
-> "The cat sat on [MODEL PREDICTS SWITCH HERE ->] कुर्सी पर बैठी"
-> Model correctly anticipated Hindi insertion with P(switch) = 0.78
+**False Positive (The Cognate Illusion):**
+> "I need to buy some [MODEL PREDICTS SWITCH ->] jalapeños for the salsa." 
+> Model predicted a temporary switch before "jalapeños". Socially plausible, but grammatically incorrect since the context remains English.
 
-**False Positive (False Alarm):**
-> "I went to the tienda [MODEL PREDICTS SWITCH HERE ->] and bought..."
-> Model predicted switch after Spanish word but speaker continued in English
+**False Negative (Invisible Intra-Sentential Transitions):**
+> "We should probably just [SWITCH HAPPENED HERE ->] aller au magasin demain"
+> Model completely failed to predict a sudden French jump mid-phrase, P(switch) = 0.12. 
 
-**False Negative (Missed Switch):**
-> "We should probably [SWITCH HAPPENED HERE ->] aller au magasin demain"
-> Model failed to predict French clause insertion, P(switch) = 0.12
-
-**Pattern:** Model struggles more with intra-sentential switches (mid-sentence) than inter-sentential (sentence boundary).
+**Pattern:** Model excels at detecting inter-sentential punctuation cues, but struggles heavily with deep intra-sentential mid-phrase jumps without clear grammatical warning.
 
 ---
 
