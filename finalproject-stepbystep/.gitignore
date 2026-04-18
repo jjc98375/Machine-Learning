@@ -14,3 +14,8 @@ final_project_code*
 
 # Misc
 server.pid
+.omc/
+*output*/
+*outputs*/
+*.html
+*.pdf
