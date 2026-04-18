@@ -68,7 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_path", type=str, required=True, help="Path to the trained .pt file")
     args = parser.parse_args()
     
-    device = get_device()
+    device = torch.device('cpu')
     model_name = MODELS[args.backbone]
     
     print(f"Loading '{args.backbone}'...")

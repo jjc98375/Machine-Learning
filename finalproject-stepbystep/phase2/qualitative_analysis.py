@@ -71,7 +71,7 @@ def extract_examples(model, dataloader, device, tokenizer, max_examples=10):
     return examples
 
 def run_analysis(args):
-    device = get_device()
+    device = torch.device('cpu')
     model_name = MODELS[args.backbone]
     
     print(f"Loading tokenizer & configuration for {args.backbone}...")
