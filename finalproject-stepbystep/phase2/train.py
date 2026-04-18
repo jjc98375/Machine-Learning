@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import Dataset, DataLoader, random_split
 from torch.optim import AdamW
-from transformers import get_linear_schedule_with_warmup
+from transformers import get_cosine_schedule_with_warmup
 from collections import defaultdict
 import os
 
@@ -112,7 +112,7 @@ def train_model(model_name, epochs=EPOCHS, max_samples_per_pair=2000, resume_pat
     optimizer = AdamW(model.parameters(), lr=lr)
     total_steps = len(train_loader) * epochs
     num_warmup_steps = int(total_steps * WARMUP_RATIO)
-    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=num_warmup_steps, num_training_steps=total_steps)
+    scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=num_warmup_steps, num_training_steps=total_steps)
     
     history = {
         "train_loss": [], "train_loss_sw": [], "train_loss_dur": [],

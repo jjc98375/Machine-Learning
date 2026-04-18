@@ -30,7 +30,7 @@ LAMBDA_DUR = 0.5
 
 # Backbones
 MODELS = {
-    "xlm-roberta": "xlm-roberta-base",
+    "xlm-roberta": "xlm-roberta-large",
     "mbert": "bert-base-multilingual-cased"
 }
 

@@ -54,9 +54,12 @@ class PredictiveSwitchModel(nn.Module):
         self.backbone = AutoModel.from_pretrained(model_name, config=config)
         hidden_size = config.hidden_size
         
-        # MLP heads instead of single Linear — more capacity to learn switch patterns
+        # Enhanced 3-Layer MLP heads — massive capacity to learn cross-lingual switch patterns
         self.switch_head = nn.Sequential(
-            nn.Linear(hidden_size, 256),
+            nn.Linear(hidden_size, 512),
+            nn.GELU(),
+            nn.Dropout(0.1),
+            nn.Linear(512, 256),
             nn.GELU(),
             nn.Dropout(0.1),
             nn.Linear(256, 1)
@@ -64,12 +67,15 @@ class PredictiveSwitchModel(nn.Module):
         self.loss_sw_fn = BinaryFocalLossWithLogits(alpha=focal_alpha, gamma=focal_gamma, reduction='none')
         
         self.duration_head = nn.Sequential(
-            nn.Linear(hidden_size, 256),
+            nn.Linear(hidden_size, 512),
+            nn.GELU(),
+            nn.Dropout(0.1),
+            nn.Linear(512, 256),
             nn.GELU(),
             nn.Dropout(0.1),
             nn.Linear(256, 3)
         )
-        self.loss_dur_fn = nn.CrossEntropyLoss(ignore_index=-100)
+        self.loss_dur_fn = nn.CrossEntropyLoss(ignore_index=-100, label_smoothing=0.1)
 
         # Freeze backbone, then selectively unfreeze top N layers
         if unfreeze_layers > 0:
