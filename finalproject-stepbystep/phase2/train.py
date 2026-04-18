@@ -13,6 +13,17 @@ def collect_dataset(model_name, max_per_pair, exclude_pairs=None):
     if exclude_pairs is None:
         exclude_pairs = []
         
+    # --- Cache Logic ---
+    cache_dir = "data_cache"
+    os.makedirs(cache_dir, exist_ok=True)
+    safe_model_name = model_name.replace("/", "_")
+    safe_exclude = "_".join(sorted(exclude_pairs)) if exclude_pairs else "none"
+    cache_path = os.path.join(cache_dir, f"train_data_{safe_model_name}_max{max_per_pair}_excl_{safe_exclude}.pt")
+    
+    if os.path.exists(cache_path):
+        print(f"📦 [Cache Found] Loading previously collected dataset from {cache_path}...")
+        return torch.load(cache_path)
+        
     print(f"Collecting up to {max_per_pair} samples per pair for {model_name}...")
     dataset_iter = CompleteStreamingDataset(model_name=model_name)
     pair_counts = defaultdict(int)
@@ -37,6 +48,10 @@ def collect_dataset(model_name, max_per_pair, exclude_pairs=None):
             break
             
     print(f"Successfully collected {len(collected_samples)} total samples.")
+    
+    print(f"💾 [Saving Cache] Saving dataset to {cache_path} for faster future runs...")
+    torch.save(collected_samples, cache_path)
+    
     return collected_samples
 
 class ListDataset(Dataset):
@@ -58,6 +73,19 @@ def get_device():
 
 def get_eval_dataloader(model_name, max_samples_per_pair, include_pairs):
     print(f"\n--- Collecting ZERO-SHOT EVALUATION Data (Only: {include_pairs}) ---")
+    
+    cache_dir = "data_cache"
+    os.makedirs(cache_dir, exist_ok=True)
+    safe_model_name = model_name.replace("/", "_")
+    safe_include = "_".join(sorted(include_pairs))
+    cache_path = os.path.join(cache_dir, f"eval_data_{safe_model_name}_max{max_samples_per_pair}_incl_{safe_include}.pt")
+    
+    if os.path.exists(cache_path):
+        print(f"📦 [Cache Found] Loading Zero-Shot eval dataset from {cache_path}...")
+        collected_samples = torch.load(cache_path)
+        dataset = ListDataset(collected_samples)
+        return DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
+        
     dataset_iter = CompleteStreamingDataset(model_name=model_name)
     pair_counts = defaultdict(int)
     collected_samples = []
@@ -74,6 +102,9 @@ def get_eval_dataloader(model_name, max_samples_per_pair, include_pairs):
         if all(pair_counts[p] >= max_samples_per_pair for p in include_pairs):
             break
             
+    print(f"💾 [Saving Cache] Saving eval dataset to {cache_path}...")
+    torch.save(collected_samples, cache_path)
+    
     dataset = ListDataset(collected_samples)
     return DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
 
