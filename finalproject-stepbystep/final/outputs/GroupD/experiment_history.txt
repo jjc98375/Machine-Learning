@@ -1,0 +1,132 @@
+
+[2026-04-08 14:22:35] === EXPERIMENT RUN SUMMARY ===
+Hyperparameters:
+ - Epochs                   : 5
+ - Max Samples per Pair     : 5000
+ - Batch Size               : 32
+ - Learning Rate            : 2e-05
+ - Focal Loss (Alpha)       : 0.8
+ - Focal Loss (Gamma)       : 2.0
+ - Unfreeze Layers          : 0
+ - Early Stop Patience      : 2
+ - Zero-Shot Held Out       : ['French-English', 'Spanish-English', 'Chinese-English', 'Japanese-English']
+
+Results Breakdown:
+ [MBERT]
+   * Mean Anticipatory F1 : 0.6878
+   * Universality (Sigma) : 0.0796
+   * Duration Accuracy    : 0.6480
+   * F1 (Switch=1)        : 0.5592
+   * F1 (No-Switch=0)     : 0.8383
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.7197
+      - German-English  : 0.5740
+      - Hindi-English   : 0.7609
+      - Italian-English : 0.5840
+      - Korean-English  : 0.7725
+      - Russian-English : 0.7157
+
+     [ZERO-SHOT UNIVERSAL EVALUATION]
+      * Mean ZS F1   : 0.6062
+      - Chinese-English : 0.6396 (Unseen Data!)
+      - French-English  : 0.5925 (Unseen Data!)
+      - Japanese-English: 0.6206 (Unseen Data!)
+      - Spanish-English : 0.5720 (Unseen Data!)
+
+=================================================================
+
+[2026-04-08 16:31:23] === EXPERIMENT RUN SUMMARY ===
+Hyperparameters:
+ - Epochs                   : 10
+ - Max Samples per Pair     : 10000
+ - Batch Size               : 32
+ - Learning Rate            : 2e-05
+ - Focal Loss (Alpha)       : 0.8
+ - Focal Loss (Gamma)       : 2.0
+ - Unfreeze Layers          : 0
+ - Early Stop Patience      : 2
+
+Results Breakdown:
+ [MBERT]
+   * Mean Anticipatory F1 : 0.7069
+   * Universality (Sigma) : 0.1004
+   * Duration Accuracy    : 0.6576
+   * F1 (Switch=1)        : 0.5874
+   * F1 (No-Switch=0)     : 0.8196
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.7185
+      - Chinese-English : 0.8690
+      - French-English  : 0.5901
+      - German-English  : 0.6095
+      - Hindi-English   : 0.7602
+      - Italian-English : 0.6061
+      - Japanese-English: 0.8449
+      - Korean-English  : 0.7674
+      - Russian-English : 0.7206
+      - Spanish-English : 0.5828
+
+=================================================================
+
+[2026-04-08 20:21:41] === EXPERIMENT RUN SUMMARY ===
+Hyperparameters:
+ - Epochs                   : 5
+ - Max Samples per Pair     : 3000
+ - Batch Size               : 32
+ - Learning Rate            : 2e-05
+ - Focal Loss (Alpha)       : 0.8
+ - Focal Loss (Gamma)       : 2.0
+ - Unfreeze Layers          : 3
+ - Early Stop Patience      : 2
+
+Results Breakdown:
+ [MBERT]
+   * Mean Anticipatory F1 : 0.6813
+   * Universality (Sigma) : 0.0976
+   * Duration Accuracy    : 0.3382
+   * F1 (Switch=1)        : 0.5671
+   * F1 (No-Switch=0)     : 0.7972
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.6739
+      - Chinese-English : 0.8380
+      - French-English  : 0.5648
+      - German-English  : 0.5938
+      - Hindi-English   : 0.7486
+      - Italian-English : 0.5841
+      - Japanese-English: 0.8152
+      - Korean-English  : 0.7410
+      - Russian-English : 0.6898
+      - Spanish-English : 0.5638
+
+=================================================================
+
+[2026-04-08 20:53:45] === EXPERIMENT RUN SUMMARY ===
+Hyperparameters:
+ - Epochs                   : 5
+ - Max Samples per Pair     : 3000
+ - Batch Size               : 32
+ - Learning Rate            : 2e-05
+ - Focal Loss (Alpha)       : 0.8
+ - Focal Loss (Gamma)       : 2.0
+ - Unfreeze Layers          : 3
+ - Early Stop Patience      : 2
+
+Results Breakdown:
+ [MBERT]
+   * Mean Anticipatory F1 : 0.6643
+   * Universality (Sigma) : 0.0942
+   * Duration Accuracy    : 0.6402
+   * F1 (Switch=1)        : 0.5508
+   * F1 (No-Switch=0)     : 0.7844
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.6670
+      - Chinese-English : 0.8107
+      - French-English  : 0.5672
+      - German-English  : 0.5560
+      - Hindi-English   : 0.7116
+      - Italian-English : 0.5763
+      - Japanese-English: 0.8185
+      - Korean-English  : 0.7020
+      - Russian-English : 0.6735
+      - Spanish-English : 0.5597
+
+=================================================================

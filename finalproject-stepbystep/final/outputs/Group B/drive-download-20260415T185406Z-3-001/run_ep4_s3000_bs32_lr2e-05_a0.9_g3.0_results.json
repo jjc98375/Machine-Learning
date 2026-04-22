@@ -1,0 +1,54 @@
+{
+    "run_id": "run_ep4_s3000_bs32_lr2e-05_a0.9_g3.0",
+    "hyperparameters": {
+        "epochs": 4,
+        "samples": 3000,
+        "batch_size": 32,
+        "lr": 2e-05,
+        "focal_alpha": 0.9,
+        "focal_gamma": 3.0
+    },
+    "in_domain": {
+        "xlm-roberta": {
+            "f1_macro": 0.6880377232262004,
+            "f1_switch": 0.46310425817067186,
+            "f1_no_switch": 0.912971188281729,
+            "per_pair_f1": {
+                "Arabic-English": 0.6127092116196079,
+                "Chinese-English": 0.7390477450510196,
+                "French-English": 0.49561575709985606,
+                "German-English": 0.4942648780048618,
+                "Hindi-English": 0.6457292390957667,
+                "Italian-English": 0.49503557835512163,
+                "Japanese-English": 0.7473052745221137,
+                "Korean-English": 0.6475010888795182,
+                "Russian-English": 0.5960393089411413,
+                "Spanish-English": 0.4951676156408447
+            },
+            "sigma": 0.09462633628384887,
+            "mean_f1": 0.5968415697209852,
+            "duration_accuracy": 0.7146231155778895
+        },
+        "mbert": {
+            "f1_macro": 0.6858863795842053,
+            "f1_switch": 0.4579155853025543,
+            "f1_no_switch": 0.9138571738658563,
+            "per_pair_f1": {
+                "Arabic-English": 0.5853622317299403,
+                "Chinese-English": 0.747979722356118,
+                "French-English": 0.4962679106964345,
+                "German-English": 0.49471488178025036,
+                "Hindi-English": 0.6613136273754473,
+                "Italian-English": 0.49573507275464124,
+                "Japanese-English": 0.7488812703950547,
+                "Korean-English": 0.6341968611944845,
+                "Russian-English": 0.5833660872634279,
+                "Spanish-English": 0.4952163791179003
+            },
+            "sigma": 0.09636126875208753,
+            "mean_f1": 0.59430340446637,
+            "duration_accuracy": 0.7110818636483285
+        }
+    },
+    "zero_shot": {}
+}

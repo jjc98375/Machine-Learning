@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Macro F1 Illusion</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(180deg, #f5f3f0 0%, #eae7e2 100%);
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .slide {
+    width: 1024px;
+    min-height: 580px;
+    padding: 36px 44px;
+    position: relative;
+  }
+  .slide-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #6B95C4;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .slide-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
+  }
+
+  /* ── Left: Divergence visualization ── */
+  .viz-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .divergence-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .metric-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card .label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #64748b;
+    margin-bottom: 2px;
+  }
+  .metric-card .definition {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+  .metric-card .progression {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .metric-card .from-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: #475569;
+  }
+  .metric-card .arrow {
+    font-size: 16px;
+    color: #94a3b8;
+  }
+  .metric-card .to-val {
+    font-size: 28px;
+    font-weight: 800;
+  }
+  .metric-card .delta-pill {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 999px;
+  }
+
+  .metric-up .to-val { color: #15803d; }
+  .metric-up .delta-pill { background: #dcfce7; color: #166534; }
+  .metric-up::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+  }
+
+  .metric-down .to-val { color: #b91c1c; }
+  .metric-down .delta-pill { background: #fee2e2; color: #991b1b; }
+  .metric-down::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+  }
+
+  /* Consistency table */
+  .consistency-section {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+  }
+  .consistency-section h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+  .consistency-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .consistency-table th {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    padding: 6px 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .consistency-table th:first-child { text-align: left; }
+  .consistency-table td {
+    padding: 6px 8px;
+    text-align: center;
+    font-weight: 600;
+    color: #334155;
+  }
+  .consistency-table td:first-child { text-align: left; color: #1e293b; }
+  .consistency-table tbody tr { border-bottom: 1px solid #f1f5f9; }
+  .consistency-table tbody tr:last-child { border-bottom: none; }
+  .gap-ok { color: #15803d; font-weight: 700; }
+  .gap-break { background: #fee2e2; color: #991b1b; font-weight: 700; border-radius: 4px; }
+
+  /* ── Right: Explanation ── */
+  .explain-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .explain-card {
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid;
+  }
+  .explain-card h4 {
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .explain-card p {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #475569;
+  }
+  .card-blue   { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #93c5fd; }
+  .card-blue h4 { color: #1e40af; }
+
+  .card-amber  { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-color: #fcd34d; }
+  .card-amber h4 { color: #92400e; }
+
+  .card-purple { background: linear-gradient(135deg, #faf5ff, #ede9fe); border-color: #c4b5fd; }
+  .card-purple h4 { color: #5b21b6; }
+
+  .math-highlight {
+    font-family: 'Courier New', monospace;
+    background: #1e293b;
+    color: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  /* Bottom bar */
+  .bottom-bar {
+    margin-top: 20px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+  }
+  .bottom-bar .icon { font-size: 20px; flex-shrink: 0; }
+  .bottom-bar p { font-size: 12px; line-height: 1.5; }
+  .bottom-bar strong { color: #93c5fd; }
+</style>
+</head>
+<body>
+
+<div class="slide">
+  <div class="slide-title">THE MACRO F1 ILLUSION</div>
+  <div class="slide-subtitle">Why Group E&rsquo;s aggregate metrics <em>improve</em> while universality collapses &mdash; a diagnostic divergence</div>
+
+  <div class="content-grid">
+    <!-- Left: Divergence viz -->
+    <div class="viz-section">
+      <div class="divergence-row">
+        <div class="metric-card metric-up">
+          <div class="label">Macro F1 (token-pooled)</div>
+          <div class="definition">avg(F1<sub>switch</sub>, F1<sub>no-switch</sub>) across all tokens</div>
+          <div class="progression">
+            <span class="from-val">0.703</span>
+            <span class="arrow">&rarr;</span>
+            <span class="to-val">0.788</span>
+          </div>
+          <span class="delta-pill">&uarr; +0.085</span>
+        </div>
+
+        <div class="metric-card metric-down">
+          <div class="label">Mean Anticipatory F1 (per-pair)</div>
+          <div class="definition">avg of 10 per-pair macro-F1 scores</div>
+          <div class="progression">
+            <span class="from-val">0.707</span>
+            <span class="arrow">&rarr;</span>
+            <span class="to-val">0.662</span>
+          </div>
+          <span class="delta-pill">&darr; &minus;0.045</span>
+        </div>
+      </div>
+
+      <!-- Consistency table: these two tracked across groups until E -->
+      <div class="consistency-section">
+        <h3>Two Metrics Agreed Until Group E</h3>
+        <table class="consistency-table">
+          <thead>
+            <tr>
+              <th>Paradigm</th>
+              <th>Mean F1</th>
+              <th>Macro F1</th>
+              <th>|Gap|</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Group A (ep3, s2000)</td>
+              <td>0.638</td>
+              <td>0.652</td>
+              <td class="gap-ok">0.014</td>
+            </tr>
+            <tr>
+              <td>Group C (bs64, lr5e-5)</td>
+              <td>0.697</td>
+              <td>0.695</td>
+              <td class="gap-ok">0.002</td>
+            </tr>
+            <tr>
+              <td>Group D (ep10, s10K)</td>
+              <td>0.707</td>
+              <td>0.703</td>
+              <td class="gap-ok">0.004</td>
+            </tr>
+            <tr>
+              <td><strong style="color:#991b1b">Group E (ep10, s30K)</strong></td>
+              <td><strong>0.662</strong></td>
+              <td><strong>0.788</strong></td>
+              <td><span class="gap-break" style="padding:3px 8px">0.126</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right: Explanation cards -->
+    <div class="explain-section">
+      <div class="explain-card card-amber">
+        <h4>🧮 The Mechanism</h4>
+        <p>When a Latin pair collapses to &ldquo;always no-switch&rdquo;:</p>
+        <span class="math-highlight">F1<sub>switch</sub> = 0 &nbsp;&bull;&nbsp; F1<sub>no-switch</sub> = 1</span>
+        <p style="margin-top:6px">&rarr; per-pair macro-F1 = <strong>0.5 exactly</strong> (drags Mean F1 down)<br>
+        &rarr; but globally the no-switch class is now <em>perfectly</em> classified on those tokens (inflates Macro F1).</p>
+      </div>
+
+      <div class="explain-card card-blue">
+        <h4>🎯 What This Diagnoses</h4>
+        <p>Token-level Macro F1 <strong>rewards</strong> majority-class collapse. It cannot see that 4 of 10 pairs are broken because it pools every token into one bucket where CJK predictions dominate.</p>
+      </div>
+
+      <div class="explain-card card-purple">
+        <h4>📐 Why Mean F1 + &sigma; Win</h4>
+        <p>Per-pair averaging <em>penalizes</em> unevenness across languages. The 0.126 Mean&ndash;Macro gap <strong>is the collapse</strong>. No other aggregate exposes it this cleanly.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Takeaway -->
+  <div class="bottom-bar">
+    <span class="icon">💡</span>
+    <p><strong>Methodological takeaway:</strong> Reporting Macro F1 alone would hide a representational collapse under a <em>superficially improving</em> 0.788 aggregate. <strong>Mean Anticipatory F1 and &sigma;<sub>universality</sub></strong> are the correct metrics for cross-lingual code-switching evaluation &mdash; and Group E is the evidence.</p>
+  </div>
+</div>
+
+</body>
+</html>

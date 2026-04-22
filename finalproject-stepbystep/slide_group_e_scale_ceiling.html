@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group E — Scale Ceiling Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(180deg, #f5f3f0 0%, #eae7e2 100%);
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .slide {
+    width: 1024px;
+    min-height: 580px;
+    padding: 36px 44px;
+    position: relative;
+  }
+  .slide-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #6B95C4;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .slide-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
+  }
+
+  /* ── Heatmap Table ── */
+  .heatmap-section h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .heatmap-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 3px;
+  }
+  .heatmap-table thead th {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  .heatmap-table thead th:first-child {
+    text-align: left;
+  }
+  .heatmap-table tbody td {
+    padding: 7px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+  }
+  .heatmap-table tbody td:first-child {
+    text-align: left;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 12px;
+    border-radius: 6px 0 0 6px;
+    padding-left: 10px;
+  }
+  .heatmap-table tbody td:last-child {
+    border-radius: 0 6px 6px 0;
+  }
+
+  /* F1 heatmap shades (same palette as sibling slide) */
+  .f1-high     { background: #3b82f6; color: white; }
+  .f1-mid-high { background: #60a5fa; color: white; }
+  .f1-mid      { background: #93c5fd; color: #1e3a5f; }
+  .f1-mid-low  { background: #bfdbfe; color: #1e3a5f; }
+  .f1-low      { background: #dbeafe; color: #1e3a5f; }
+  .f1-collapse { background: #fecaca; color: #7f1d1d; font-weight: 700; }
+
+  /* Delta cells */
+  .delta-pos { background: #dcfce7; color: #166534; font-weight: 700; }
+  .delta-neg { background: #fee2e2; color: #991b1b; font-weight: 700; }
+  .delta-neu { background: #f1f5f9; color: #475569; }
+
+  .axis-cjk   { background: #fef3c7; }
+  .axis-diff  { background: #fce7f3; }
+  .axis-latin { background: #e0e7ff; }
+
+  /* ── Right Side: Insights ── */
+  .insights-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .insight-card {
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid;
+  }
+  .insight-card h4 {
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .insight-card p {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #475569;
+  }
+  .insight-card .metric {
+    font-weight: 700;
+    font-size: 18px;
+    margin: 4px 0;
+    display: block;
+  }
+
+  .card-blue   { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #93c5fd; }
+  .card-blue h4 { color: #1e40af; } .card-blue .metric { color: #1d4ed8; }
+
+  .card-red    { background: linear-gradient(135deg, #fef2f2, #fee2e2); border-color: #fca5a5; }
+  .card-red h4 { color: #991b1b; } .card-red .metric { color: #b91c1c; }
+
+  .card-amber  { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-color: #fcd34d; }
+  .card-amber h4 { color: #92400e; } .card-amber .metric { color: #b45309; }
+
+  .card-green  { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-color: #86efac; }
+  .card-green h4 { color: #166534; } .card-green .metric { color: #15803d; }
+
+  /* Bottom bar */
+  .bottom-bar {
+    margin-top: 20px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+  }
+  .bottom-bar .icon { font-size: 20px; flex-shrink: 0; }
+  .bottom-bar p { font-size: 12px; line-height: 1.5; }
+  .bottom-bar strong { color: #fca5a5; }
+
+  .scale-pill {
+    display: inline-block;
+    background: #1e293b;
+    color: #fef3c7;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-left: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="slide">
+  <div class="slide-title">SCALE CEILING TEST <span style="color:#b91c1c">(GROUP E)</span></div>
+  <div class="slide-subtitle">mBERT, 10 Epochs &times; 30K Samples/Pair (3&times; Group D budget) &mdash; negative control for the Latin ceiling</div>
+
+  <div class="content-grid">
+    <!-- Left: Heatmap Table comparing Group D vs Group E -->
+    <div class="heatmap-section">
+      <table class="heatmap-table">
+        <thead>
+          <tr>
+            <th style="width:140px">Language Pair</th>
+            <th>Axis</th>
+            <th>Group D<br><span style="font-weight:500;text-transform:none">10K / 10ep</span></th>
+            <th>Group E<br><span style="font-weight:500;text-transform:none">30K / 10ep</span></th>
+            <th>&Delta;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- CJK -->
+          <tr>
+            <td class="axis-cjk">Chinese&ndash;English</td>
+            <td style="font-size:11px;color:#92400e">CJK</td>
+            <td class="f1-high">0.869</td>
+            <td class="f1-high">0.805</td>
+            <td class="delta-neg">&minus;0.064</td>
+          </tr>
+          <tr>
+            <td class="axis-cjk">Japanese&ndash;English</td>
+            <td style="font-size:11px;color:#92400e">CJK</td>
+            <td class="f1-high">0.845</td>
+            <td class="f1-high">0.803</td>
+            <td class="delta-neg">&minus;0.042</td>
+          </tr>
+          <tr>
+            <td class="axis-cjk">Korean&ndash;English</td>
+            <td style="font-size:11px;color:#92400e">Hangul</td>
+            <td class="f1-mid-high">0.767</td>
+            <td class="f1-mid-high">0.778</td>
+            <td class="delta-pos">+0.011</td>
+          </tr>
+          <tr><td colspan="5" style="height:3px"></td></tr>
+          <!-- Different Script -->
+          <tr>
+            <td class="axis-diff">Hindi&ndash;English</td>
+            <td style="font-size:11px;color:#9d174d">Devanagari</td>
+            <td class="f1-mid-high">0.760</td>
+            <td class="f1-mid-high">0.763</td>
+            <td class="delta-pos">+0.003</td>
+          </tr>
+          <tr>
+            <td class="axis-diff">Russian&ndash;English</td>
+            <td style="font-size:11px;color:#9d174d">Cyrillic</td>
+            <td class="f1-mid">0.721</td>
+            <td class="f1-mid">0.737</td>
+            <td class="delta-pos">+0.016</td>
+          </tr>
+          <tr>
+            <td class="axis-diff">Arabic&ndash;English</td>
+            <td style="font-size:11px;color:#9d174d">Arabic</td>
+            <td class="f1-mid">0.719</td>
+            <td class="f1-mid">0.736</td>
+            <td class="delta-pos">+0.017</td>
+          </tr>
+          <tr><td colspan="5" style="height:3px"></td></tr>
+          <!-- Latin: collapse -->
+          <tr>
+            <td class="axis-latin">German&ndash;English</td>
+            <td style="font-size:11px;color:#3730a3">Latin</td>
+            <td class="f1-mid-low">0.610</td>
+            <td class="f1-collapse">0.500</td>
+            <td class="delta-neg">&minus;0.110</td>
+          </tr>
+          <tr>
+            <td class="axis-latin">Italian&ndash;English</td>
+            <td style="font-size:11px;color:#3730a3">Latin</td>
+            <td class="f1-mid-low">0.606</td>
+            <td class="f1-collapse">0.500</td>
+            <td class="delta-neg">&minus;0.106</td>
+          </tr>
+          <tr>
+            <td class="axis-latin">French&ndash;English</td>
+            <td style="font-size:11px;color:#3730a3">Latin</td>
+            <td class="f1-low">0.590</td>
+            <td class="f1-collapse">0.500</td>
+            <td class="delta-neg">&minus;0.090</td>
+          </tr>
+          <tr>
+            <td class="axis-latin">Spanish&ndash;English</td>
+            <td style="font-size:11px;color:#3730a3">Latin</td>
+            <td class="f1-low">0.583</td>
+            <td class="f1-collapse">0.500</td>
+            <td class="delta-neg">&minus;0.083</td>
+          </tr>
+          <tr><td colspan="5" style="height:6px"></td></tr>
+          <!-- Aggregate row -->
+          <tr>
+            <td style="background:#1e293b;color:white">Mean Anticipatory F1</td>
+            <td style="background:#1e293b;color:#cbd5e1;font-size:11px">All 10 pairs</td>
+            <td style="background:#334155;color:white;font-weight:700">0.707</td>
+            <td style="background:#334155;color:white;font-weight:700">0.662</td>
+            <td style="background:#7f1d1d;color:white;font-weight:700">&minus;0.045</td>
+          </tr>
+          <tr>
+            <td style="background:#1e293b;color:white">Universality &sigma;</td>
+            <td style="background:#1e293b;color:#cbd5e1;font-size:11px">lower = better</td>
+            <td style="background:#334155;color:white;font-weight:700">0.100</td>
+            <td style="background:#334155;color:white;font-weight:700">0.134</td>
+            <td style="background:#7f1d1d;color:white;font-weight:700">+0.034</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Right: Insight cards -->
+    <div class="insights-section">
+      <div class="insight-card card-amber">
+        <h4>🧪 Experiment Setup <span class="scale-pill">3&times; data</span></h4>
+        <p>Tripled training volume to 30K samples/pair at 10 epochs. Architecture, focal loss, and causal mask held fixed vs. Group D.</p>
+      </div>
+
+      <div class="insight-card card-red">
+        <h4>🧱 Latin Collapse Signature</h4>
+        <span class="metric">F1 = 0.5000</span>
+        <p>Fre/Ita/Spa pin to <strong>exactly 0.5000</strong> (4 d.p.) &mdash; the mathematical signature of &ldquo;always predict no-switch.&rdquo; Switch head abandons minority class.</p>
+      </div>
+
+      <div class="insight-card card-green">
+        <h4>✅ Non-Latin Pairs Improve Mildly</h4>
+        <p>Ara <strong style="color:#15803d">+0.017</strong> &middot; Rus <strong style="color:#15803d">+0.016</strong> &middot; Hin <strong style="color:#15803d">+0.003</strong>. CJK retains F1 &gt; 0.80 despite slight decline.</p>
+      </div>
+
+      <div class="insight-card card-blue">
+        <h4>🔬 Verdict</h4>
+        <p>The 0.59 ceiling is <strong>representational</strong>, not data-bound. More data <em>sharpens</em> the ceiling by pushing Latin pairs to majority-class collapse &mdash; it does not cross it.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Takeaway -->
+  <div class="bottom-bar">
+    <span class="icon">⚠️</span>
+    <p><strong>Negative-control confirmed:</strong> 3&times; Latin-script exposure did not close the gap; it <em>widened</em> it. Crossing the 0.59 ceiling requires a <strong>representational intervention</strong> (character-aware / byte-level tokenization), not additional data or epochs.</p>
+  </div>
+</div>
+
+</body>
+</html>

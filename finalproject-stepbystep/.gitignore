@@ -19,3 +19,10 @@ server.pid
 *outputs*/
 *.html
 *.pdf
+
+# ── Allowed exceptions (Group E deliverables + slides) ──
+!final/outputs/
+!final/outputs/GroupE/
+!final/outputs/GroupE/*.json
+!slide_group_e_scale_ceiling.html
+!slide_macro_mean_divergence.html

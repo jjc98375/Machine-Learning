@@ -1,0 +1,54 @@
+{
+    "run_id": "run_ep4_s3000_bs32_lr2e-05_a0.8_g2.0",
+    "hyperparameters": {
+        "epochs": 4,
+        "samples": 3000,
+        "batch_size": 32,
+        "lr": 2e-05,
+        "focal_alpha": 0.8,
+        "focal_gamma": 2.0
+    },
+    "in_domain": {
+        "xlm-roberta": {
+            "f1_macro": 0.7460762995962285,
+            "f1_switch": 0.5453326511529437,
+            "f1_no_switch": 0.9468199480395131,
+            "per_pair_f1": {
+                "Arabic-English": 0.6940806485028752,
+                "Chinese-English": 0.804345893762083,
+                "French-English": 0.496135651942168,
+                "German-English": 0.4947467876039305,
+                "Hindi-English": 0.7239872680043768,
+                "Italian-English": 0.4959344777025726,
+                "Japanese-English": 0.8087385993116317,
+                "Korean-English": 0.7168170827204661,
+                "Russian-English": 0.6872080881569645,
+                "Spanish-English": 0.49548662904242724
+            },
+            "sigma": 0.12529733025214446,
+            "mean_f1": 0.6417481126749496,
+            "duration_accuracy": 0.7154064869418703
+        },
+        "mbert": {
+            "f1_macro": 0.764671285008566,
+            "f1_switch": 0.5723258821355994,
+            "f1_no_switch": 0.9570166878815324,
+            "per_pair_f1": {
+                "Arabic-English": 0.6993067424890904,
+                "Chinese-English": 0.7807656143707826,
+                "French-English": 1.0,
+                "German-English": 1.0,
+                "Hindi-English": 0.7559903167463349,
+                "Italian-English": 0.49999266076592247,
+                "Japanese-English": 0.7791015267019175,
+                "Korean-English": 0.7418162398531306,
+                "Russian-English": 0.7050258427670659,
+                "Spanish-English": 1.0
+            },
+            "sigma": 0.15334540363446844,
+            "mean_f1": 0.7961998943694244,
+            "duration_accuracy": 0.7074997381376349
+        }
+    },
+    "zero_shot": {}
+}

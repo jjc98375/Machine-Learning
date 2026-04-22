@@ -1,11 +1,38 @@
-CVB<x
 import os
+import argparse
+import sys
 import torch
+import torch.nn as nn
 from transformers import AutoTokenizer
 
 from phase2_config import MODELS
 from model import PredictiveSwitchModel
 from train import get_device
+
+
+def _adapt_heads_to_checkpoint(model, state_dict):
+    """
+    Older checkpoints save switch_head / duration_head as plain nn.Linear
+    (keys: `switch_head.weight`, `switch_head.bias`).
+    Current model.py uses a 3-layer MLP (keys: `switch_head.0.weight`, ...).
+    Swap the heads to plain Linear so the checkpoint loads cleanly.
+    """
+    is_simple_switch = (
+        'switch_head.weight' in state_dict
+        and state_dict['switch_head.weight'].ndim == 2
+        and state_dict['switch_head.weight'].shape[0] == 1
+    )
+    is_simple_duration = (
+        'duration_head.weight' in state_dict
+        and state_dict['duration_head.weight'].ndim == 2
+        and state_dict['duration_head.weight'].shape[0] == 3
+    )
+    if is_simple_switch and is_simple_duration:
+        hidden = state_dict['switch_head.weight'].shape[1]
+        model.switch_head = nn.Linear(hidden, 1)
+        model.duration_head = nn.Linear(hidden, 3)
+        print("ℹ️  Detected legacy single-Linear heads — adapted model architecture.")
+    return model
 
 def run_demo(model, tokenizer, device):
     print("\n" + "="*60)
@@ -74,9 +101,11 @@ if __name__ == "__main__":
     print(f"Loading '{args.backbone}'...")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = PredictiveSwitchModel(model_name)
-    
+
     if os.path.exists(args.model_path):
-        model.load_state_dict(torch.load(args.model_path, map_location=device, weights_only=True))
+        state_dict = torch.load(args.model_path, map_location=device, weights_only=True)
+        model = _adapt_heads_to_checkpoint(model, state_dict)
+        model.load_state_dict(state_dict)
         print("✅ Model loaded successfully!")
     else:
         print(f"❌ Error: Model path '{args.model_path}' not found!")

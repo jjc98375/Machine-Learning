@@ -1,0 +1,53 @@
+{
+    "run_id": "run_ep5_s5000_bs32_lr2e-05_a0.8_g2.0_fullft_zs-Fre_Spa_Chi_Jap",
+    "hyperparameters": {
+        "epochs": 5,
+        "samples": 5000,
+        "batch_size": 32,
+        "lr": 2e-05,
+        "focal_alpha": 0.8,
+        "focal_gamma": 2.0,
+        "unfreeze_layers": 0,
+        "patience": 2,
+        "zero_shot_pairs": [
+            "French-English",
+            "Spanish-English",
+            "Chinese-English",
+            "Japanese-English"
+        ]
+    },
+    "in_domain": {
+        "mbert": {
+            "f1_macro": 0.6987591032152954,
+            "f1_switch": 0.559170890775837,
+            "f1_no_switch": 0.8383473156547538,
+            "per_pair_f1": {
+                "Arabic-English": 0.7197376071732772,
+                "German-English": 0.5740392322820571,
+                "Hindi-English": 0.760865836294403,
+                "Italian-English": 0.5840149099572189,
+                "Korean-English": 0.7724869905889726,
+                "Russian-English": 0.7157258859886706
+            },
+            "sigma": 0.07960655859506702,
+            "mean_f1": 0.6878117437140999,
+            "duration_accuracy": 0.6479896085493299
+        }
+    },
+    "zero_shot": {
+        "mbert": {
+            "f1_macro": 0.614997543721137,
+            "f1_switch": 0.47480963002845933,
+            "f1_no_switch": 0.7551854574138147,
+            "per_pair_f1": {
+                "Chinese-English": 0.6395906544051609,
+                "French-English": 0.592503560528691,
+                "Japanese-English": 0.620597236386925,
+                "Spanish-English": 0.5720318904968061
+            },
+            "sigma": 0.02587115628107939,
+            "mean_f1": 0.6061808354543958,
+            "duration_accuracy": 0.4971206449755255
+        }
+    }
+}

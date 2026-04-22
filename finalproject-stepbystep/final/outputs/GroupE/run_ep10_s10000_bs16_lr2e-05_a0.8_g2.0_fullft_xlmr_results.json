@@ -1,0 +1,40 @@
+{
+    "run_id": "run_ep10_s10000_bs16_lr2e-05_a0.8_g2.0_fullft_xlmr",
+    "group": "E",
+    "source": "transcribed from evaluation-report screenshot (123_1 4.jpeg)",
+    "hyperparameters": {
+        "epochs": 10,
+        "samples": 10000,
+        "batch_size": 16,
+        "lr": 2e-05,
+        "focal_alpha": 0.8,
+        "focal_gamma": 2.0,
+        "unfreeze_layers": 0,
+        "patience": 2,
+        "full_fine_tune": true,
+        "zero_shot_pairs": []
+    },
+    "in_domain": {
+        "xlm-roberta": {
+            "f1_macro": 0.7730,
+            "f1_switch": 0.5953,
+            "f1_no_switch": 0.9507,
+            "duration_accuracy": 0.7235,
+            "per_pair_f1": {
+                "Arabic-English": 0.7106,
+                "Chinese-English": 0.8442,
+                "French-English": 0.4962,
+                "German-English": 0.4949,
+                "Hindi-English": 0.7574,
+                "Italian-English": 0.4958,
+                "Japanese-English": 0.8290,
+                "Korean-English": 0.7556,
+                "Russian-English": 0.7177,
+                "Spanish-English": 0.4954
+            },
+            "sigma": 0.1397,
+            "mean_f1": 0.6597
+        }
+    },
+    "zero_shot": {}
+}

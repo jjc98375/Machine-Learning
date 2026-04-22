@@ -1,0 +1,144 @@
+
+[2026-04-03 01:18:52] === EXPERIMENT RUN SUMMARY ===
+Hyperparameters:
+ - Epochs                   : 4
+ - Max Samples per Pair     : 3000
+ - Batch Size               : 32
+ - Learning Rate            : 2e-05
+ - Focal Loss (Alpha)       : 0.5
+ - Focal Loss (Gamma)       : 0.0
+
+Results Breakdown:
+ [XLM-ROBERTA]
+   * Mean Anticipatory F1 : 0.8718
+   * Universality (Sigma) : 0.1068
+   * Duration Accuracy    : 0.7131
+   * F1 (Switch=1)        : 0.6272
+   * F1 (No-Switch=0)     : 0.9744
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.7438
+      - Chinese-English : 0.8133
+      - French-English  : 1.0000
+      - German-English  : 1.0000
+      - Hindi-English   : 0.8000
+      - Italian-English : 1.0000
+      - Japanese-English: 0.8022
+      - Korean-English  : 0.8065
+      - Russian-English : 0.7522
+      - Spanish-English : 1.0000
+
+ [MBERT]
+   * Mean Anticipatory F1 : 0.8704
+   * Universality (Sigma) : 0.1092
+   * Duration Accuracy    : 0.7142
+   * F1 (Switch=1)        : 0.6226
+   * F1 (No-Switch=0)     : 0.9742
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.7369
+      - Chinese-English : 0.8223
+      - French-English  : 1.0000
+      - German-English  : 1.0000
+      - Hindi-English   : 0.7870
+      - Italian-English : 1.0000
+      - Japanese-English: 0.8056
+      - Korean-English  : 0.8139
+      - Russian-English : 0.7379
+      - Spanish-English : 1.0000
+
+=================================================================
+
+[2026-04-03 01:33:00] === EXPERIMENT RUN SUMMARY ===
+Hyperparameters:
+ - Epochs                   : 4
+ - Max Samples per Pair     : 3000
+ - Batch Size               : 32
+ - Learning Rate            : 2e-05
+ - Focal Loss (Alpha)       : 0.8
+ - Focal Loss (Gamma)       : 2.0
+
+Results Breakdown:
+ [XLM-ROBERTA]
+   * Mean Anticipatory F1 : 0.6417
+   * Universality (Sigma) : 0.1253
+   * Duration Accuracy    : 0.7154
+   * F1 (Switch=1)        : 0.5453
+   * F1 (No-Switch=0)     : 0.9468
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.6941
+      - Chinese-English : 0.8043
+      - French-English  : 0.4961
+      - German-English  : 0.4947
+      - Hindi-English   : 0.7240
+      - Italian-English : 0.4959
+      - Japanese-English: 0.8087
+      - Korean-English  : 0.7168
+      - Russian-English : 0.6872
+      - Spanish-English : 0.4955
+
+ [MBERT]
+   * Mean Anticipatory F1 : 0.7962
+   * Universality (Sigma) : 0.1533
+   * Duration Accuracy    : 0.7075
+   * F1 (Switch=1)        : 0.5723
+   * F1 (No-Switch=0)     : 0.9570
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.6993
+      - Chinese-English : 0.7808
+      - French-English  : 1.0000
+      - German-English  : 1.0000
+      - Hindi-English   : 0.7560
+      - Italian-English : 0.5000
+      - Japanese-English: 0.7791
+      - Korean-English  : 0.7418
+      - Russian-English : 0.7050
+      - Spanish-English : 1.0000
+
+=================================================================
+
+[2026-04-03 01:47:02] === EXPERIMENT RUN SUMMARY ===
+Hyperparameters:
+ - Epochs                   : 4
+ - Max Samples per Pair     : 3000
+ - Batch Size               : 32
+ - Learning Rate            : 2e-05
+ - Focal Loss (Alpha)       : 0.9
+ - Focal Loss (Gamma)       : 3.0
+
+Results Breakdown:
+ [XLM-ROBERTA]
+   * Mean Anticipatory F1 : 0.5968
+   * Universality (Sigma) : 0.0946
+   * Duration Accuracy    : 0.7146
+   * F1 (Switch=1)        : 0.4631
+   * F1 (No-Switch=0)     : 0.9130
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.6127
+      - Chinese-English : 0.7390
+      - French-English  : 0.4956
+      - German-English  : 0.4943
+      - Hindi-English   : 0.6457
+      - Italian-English : 0.4950
+      - Japanese-English: 0.7473
+      - Korean-English  : 0.6475
+      - Russian-English : 0.5960
+      - Spanish-English : 0.4952
+
+ [MBERT]
+   * Mean Anticipatory F1 : 0.5943
+   * Universality (Sigma) : 0.0964
+   * Duration Accuracy    : 0.7111
+   * F1 (Switch=1)        : 0.4579
+   * F1 (No-Switch=0)     : 0.9139
+     [Per-Pair F1 Breakdown]
+      - Arabic-English  : 0.5854
+      - Chinese-English : 0.7480
+      - French-English  : 0.4963
+      - German-English  : 0.4947
+      - Hindi-English   : 0.6613
+      - Italian-English : 0.4957
+      - Japanese-English: 0.7489
+      - Korean-English  : 0.6342
+      - Russian-English : 0.5834
+      - Spanish-English : 0.4952
+
+=================================================================

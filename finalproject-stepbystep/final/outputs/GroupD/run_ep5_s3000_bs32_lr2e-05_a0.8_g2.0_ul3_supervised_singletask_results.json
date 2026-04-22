@@ -1,0 +1,37 @@
+{
+    "run_id": "run_ep5_s3000_bs32_lr2e-05_a0.8_g2.0_ul3_supervised_singletask",
+    "hyperparameters": {
+        "epochs": 5,
+        "samples": 3000,
+        "batch_size": 32,
+        "lr": 2e-05,
+        "focal_alpha": 0.8,
+        "focal_gamma": 2.0,
+        "unfreeze_layers": 3,
+        "patience": 2,
+        "zero_shot_pairs": []
+    },
+    "in_domain": {
+        "mbert": {
+            "f1_macro": 0.6821484952506959,
+            "f1_switch": 0.5671398609883348,
+            "f1_no_switch": 0.797157129513057,
+            "per_pair_f1": {
+                "Arabic-English": 0.6738815415089855,
+                "Chinese-English": 0.8380383875220445,
+                "French-English": 0.5647600243028839,
+                "German-English": 0.5937702537590466,
+                "Hindi-English": 0.748607239799523,
+                "Italian-English": 0.5840500824482586,
+                "Japanese-English": 0.8152326447007037,
+                "Korean-English": 0.7410175590764863,
+                "Russian-English": 0.6898281091361887,
+                "Spanish-English": 0.5637504347102744
+            },
+            "sigma": 0.09759485528084605,
+            "mean_f1": 0.6812936276964395,
+            "duration_accuracy": 0.33820048069103853
+        }
+    },
+    "zero_shot": {}
+}

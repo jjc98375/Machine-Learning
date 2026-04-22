@@ -1,0 +1,45 @@
+{
+    "in_domain": {
+        "xlm-roberta": {
+            "f1_macro": 0.6286730468466404,
+            "f1_switch": 0.49610176446450555,
+            "f1_no_switch": 0.7612443292287752,
+            "per_pair_f1": {
+                "Arabic-English": 0.5559378111785823,
+                "Chinese-English": 0.8056414576455213,
+                "French-English": 0.5594170149622147,
+                "German-English": 0.5566302691878385,
+                "Hindi-English": 0.5777599698725275,
+                "Italian-English": 0.5773057207251939,
+                "Japanese-English": 0.8050639046528072,
+                "Korean-English": 0.5541963275289308,
+                "Russian-English": 0.5638669422207442,
+                "Spanish-English": 0.5350448234804522
+            },
+            "sigma": 0.0988006934441356,
+            "mean_f1": 0.6090864241454812,
+            "duration_accuracy": 0.60814222596255
+        },
+        "mbert": {
+            "f1_macro": 0.6524907832839448,
+            "f1_switch": 0.5243187551071162,
+            "f1_no_switch": 0.7806628114607735,
+            "per_pair_f1": {
+                "Arabic-English": 0.6101602243564253,
+                "Chinese-English": 0.806148103027835,
+                "French-English": 0.5536553273328954,
+                "German-English": 0.5465393783483096,
+                "Hindi-English": 0.6744443823586895,
+                "Italian-English": 0.5606549369055505,
+                "Japanese-English": 0.7900213060477064,
+                "Korean-English": 0.6573825730060987,
+                "Russian-English": 0.639552501761804,
+                "Spanish-English": 0.5428330826275762
+            },
+            "sigma": 0.09186048057142536,
+            "mean_f1": 0.638139181577289,
+            "duration_accuracy": 0.6245722485925599
+        }
+    },
+    "zero_shot": {}
+}
